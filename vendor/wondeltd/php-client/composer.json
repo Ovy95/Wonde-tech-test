@@ -1,0 +1,24 @@
+{
+	"name": "wondeltd/php-client",
+	"description": "PHP Client for Wonde",
+	"license": "MIT",
+	"keywords": ["wonde"],
+	"authors": [
+		{
+			"name": "Philip Clifton",
+			"email": "pclifton@wonde.com"
+		}
+	],
+	"require": {
+		"php": "^7.2.5 || ^8.0",
+		"guzzlehttp/guzzle": "^7.2.0"
+	},
+	"require-dev": {
+		"phpunit/phpunit": "^9.0"
+	},
+	"autoload": {
+		"psr-4": {
+			"Wonde\\": "src"
+		}
+	}
+}
