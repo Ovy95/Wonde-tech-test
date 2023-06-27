@@ -17,4 +17,12 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/getTimeTable/{teachersId}', [WondeClientController::class, 'getTeachers']);
+Route::get('/getTeachersIds', [WondeClientController::class, 'getTeachersIds']);
+Route::get('/getTeachersClassSchedule/{teachersId}', [WondeClientController::class, 'getTeachersClassSchedule']);
+
+Route::get('/getClassRegister/{classNameArray}', [WondeClientController::class, 'getClassRegister']);
+
+// Get Lessons needs to take an array of $classIds from getTeachers->classes
+Route::get('/getLessons', [WondeClientController::class, 'lessonPeriodSchedule']);
+
+Route::get('/getTeachersWeeklyTimeTable/{teachersId}', [WondeClientController::class, 'getTeachersWeeklyTimeTable']);
