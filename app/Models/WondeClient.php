@@ -31,8 +31,7 @@ class WondeClient extends Model
                 $teachersArray[$employee->id] = ['forename' => $employee->forename, 'surname' => $employee->surname];
             }
         }
-        $x = $this->displayTeachers($teachersArray);
-        echo($x);
+        $this->displayTeachers($teachersArray);
     }
     public function getTeachersClassSchedule($teachersId)
     {
@@ -120,7 +119,8 @@ public function getlessonPeriodSchedule($LessonidAndClassGroupNameArray)
         }
         return $ClassIdClassGroupStudentsArray;
     }
-    public function createWeeklyTimeTable ($LessonScheduleArray,$ClassIdClassGroupStudentsArray){
+    public function createWeeklyTimeTable ($LessonScheduleArray,$ClassIdClassGroupStudentsArray)
+    {
         $weeklyTimeTable = [];
         foreach ($LessonScheduleArray as $lessonID => $LessonDayAndTime ) {
             $classID = array_key_first($LessonDayAndTime);
@@ -154,7 +154,8 @@ public function getlessonPeriodSchedule($LessonidAndClassGroupNameArray)
         $LessonScheduleArray = $this->getlessonPeriodSchedule($teachersClassSchedule);
         $ClassIdClassGroupStudentsArray = $this->getClassIdClassGroupStudents($teachersClassSchedule);
         $WeeklyTimeTable = $this->createWeeklyTimeTable($LessonScheduleArray,$ClassIdClassGroupStudentsArray);
-        return $WeeklyTimeTable;
+
+        echo $this->displayWeeklyTimeTable($WeeklyTimeTable);
     }
 
     public function displayTeachers($employees)
@@ -182,6 +183,47 @@ public function getlessonPeriodSchedule($LessonidAndClassGroupNameArray)
         echo '</div>';
         echo '</body>';
         echo '</html>';
+    }
+
+
+    public function displayWeeklyTimeTable($WeeklyTimeTable){
+
+        $table = '<table>';
+        $table .= '<thead><tr><th>Day</th><th>Time</th><th>Group</th><th>ID</th><th>Surname</th><th>Forename</th></tr></thead>';
+        $table .= '<tbody>';
+
+        $previousGroup = null; // Track the previous group
+
+        foreach ($WeeklyTimeTable as $item) {
+            foreach ($item as $day => $slots) {
+                foreach ($slots as $slot) {
+                    foreach ($slot as $time => $groups) {
+                        foreach ($groups as $group => $students) {
+                            foreach ($students[0] as $student) {
+                                $table .= '<tr>';
+                                $table .= "<td>$day</td>";
+                                $table .= "<td>$time</td>";
+                                $table .= "<td>$group</td>";
+                                $table .= "<td>{$student['id']}</td>";
+                                $table .= "<td>{$student['surname']}</td>";
+                                $table .= "<td>{$student['forename']}</td>";
+                                $table .= '</tr>';
+                            }
+                            if ($group !== $previousGroup) {
+                                // Add two empty rows if the group changes
+                                $table .= '<tr><td colspan="6">&nbsp;</td></tr>';
+                                $table .= '<tr><td colspan="6">&nbsp;</td></tr>';
+                            }
+                            $previousGroup = $group; // Update the previous group
+                        }
+                    }
+                }
+            }
+        }
+
+        $table .= '</tbody></table>';
+
+        return $table;
     }
 
 }
