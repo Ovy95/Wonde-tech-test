@@ -75,35 +75,17 @@ class WondeClient extends Model
         return $formattedDateTime;
     }
 
-    public function getFormattedDateTimeSevenDaysAhead() {
-        $dateTime = new DateTime();
-        $dateTime->modify('+7 days');
-        $formattedDateTime = $dateTime->format('Y-m-d H:i:s.u');
-        return $formattedDateTime;
-    }
-
-    public function getFormattedDateTimeSevenDaysBefore() {
-        $dateTime = new DateTime();
-        $dateTime->modify('-7 days');
-        $formattedDateTime = $dateTime->format('Y-m-d H:i:s.u');
-        return $formattedDateTime;
-    }
-
     public function lessonPeriodSchedule($classId) {
-
         $school = $this->schoolClientSetup;
 
         foreach ($school->lessons->all( [
-            "class", // This gives me the ID match from Classes from employeers
+            "class",
             "period",
-//            "room" not needed add this as a nice to have for timeable
         ], ['lessons_start_after' => $this->getCurrentDateTime()] ) as $lessons) {
             if($lessons->class->data->id == $classId ) {
-
                 return [$classId => [$lessons->period->data->day => $lessons->period->data->start_time]];
             }
         }
-
     }
 public function getlessonPeriodSchedule ($LessonidAndClassGroupNameArray){
     $LessonScheduleArray = [];
@@ -117,73 +99,14 @@ public function getlessonPeriodSchedule ($LessonidAndClassGroupNameArray){
     public function getClassIdClassGroupStudents ($LessonidAndClassGroupNameArray){
         $ClassIdClassGroupStudentsArray=[];
         foreach ($LessonidAndClassGroupNameArray as $class ) {
-            //A946948345
             $classId = array_key_first($class);
-            //10A/Ar1
             $teachingGroupName = $class[$classId];
+
             $ClassIdClassGroupStudentsArray[$classId] = [$teachingGroupName => [$this->getClassRegister($teachingGroupName)]];
         }
         return $ClassIdClassGroupStudentsArray;
     }
-    public function getTeachersWeeklyTimeTable($teachersId)
-    {
-        $teachersClassSchedule = $this->getTeachersClassSchedule($teachersId);
-        $LessonScheduleArray = $this->getlessonPeriodSchedule($teachersClassSchedule);
-        $ClassIdClassGroupStudentsArray = $this->getClassIdClassGroupStudents($teachersClassSchedule);
-//        $LessonScheduleArray = [
-//            0 => [
-//                "A946948345" => [
-//                    "wednesday" => "11:35:00"
-//                ]
-//            ],
-//            1 => [
-//                "A1293302658" => [
-//                    "wednesday" => "09:15:00"
-//                ]
-//            ],
-//            2 => [
-//                "A1426106854" => [
-//                    "friday" => "09:15:00"
-//                ]
-//            ],
-//            3 => [
-//                "A988420665" => [
-//                    "tuesday" => "10:15:00"
-//                ]
-//            ],
-//            4 => [
-//                "A1624627848" => [
-//                    "friday" => "14:30:00"
-//                ]
-//            ],
-//            5 => [
-//                "A691509979" => [
-//                    "tuesday" => "14:30:00"
-//                ]
-//            ],
-//            6 => [
-//                "A1594973482" => [
-//                    "monday" => "12:35:00"
-//                ]
-//            ],
-//            7 => [
-//                "A438211796" => [
-//                    "friday" => "12:35:00"
-//                ]
-//            ],
-//            8 => [
-//                "A207530753" => [
-//                    "wednesday" => "14:30:00"
-//                ]
-//            ],
-//            9 => [
-//                "A393363237" => [
-//                    "thursday" => "09:15:00"
-//                ]
-//            ]
-//        ];
-
-
+    public function createWeeklyTimeTable ($LessonScheduleArray,$ClassIdClassGroupStudentsArray){
         $weeklyTimeTable = [];
         foreach ($LessonScheduleArray as $lessonID => $LessonDayAndTime ) {
             $classID = array_key_first($LessonDayAndTime);
@@ -191,7 +114,6 @@ public function getlessonPeriodSchedule ($LessonidAndClassGroupNameArray){
             $timeOfTheLesson = $LessonDayAndTime[$classID][$dayOfTheWeek];
 
             $weeklyTimeTable[][$dayOfTheWeek][] = [$timeOfTheLesson=>$ClassIdClassGroupStudentsArray[$classID]];
-
         }
 
         usort($weeklyTimeTable, function($a, $b) {
@@ -211,7 +133,14 @@ public function getlessonPeriodSchedule ($LessonidAndClassGroupNameArray){
             return strcmp($timeA, $timeB);
         });
         return $weeklyTimeTable;
-dd($weeklyTimeTable);
+    }
+    public function getTeachersWeeklyTimeTable($teachersId)
+    {
+        $teachersClassSchedule = $this->getTeachersClassSchedule($teachersId);
+        $LessonScheduleArray = $this->getlessonPeriodSchedule($teachersClassSchedule);
+        $ClassIdClassGroupStudentsArray = $this->getClassIdClassGroupStudents($teachersClassSchedule);
+        $WeeklyTimeTable = $this->createWeeklyTimeTable($LessonScheduleArray,$ClassIdClassGroupStudentsArray);
+        return $WeeklyTimeTable;
     }
 
 }
