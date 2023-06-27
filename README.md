@@ -20,3 +20,6 @@ Once gained the TeachersID from the endpoint called hit this endpoint using the 
 
 /getTeachersWeeklyTimeTable/`TeachersID`
 Once hitting this endpoint wait for the page to load and you will be able to see the completed user Story task.
+
+## Setup
+Create an Env file using the env.example file as template (APP_DEBUG is optional)
