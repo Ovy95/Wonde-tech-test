@@ -23,3 +23,9 @@ Once hitting this endpoint wait for the page to load and you will be able to see
 
 ## Setup
 Create an Env file using the env.example file as template (APP_DEBUG is optional)
+
+In the terminal `run composer install`
+then run `php artisan serve`
+
+Then hit the endpoints with the address shown in the terminal for example `http://127.0.0.1:8000/getTeachersIds`
+
